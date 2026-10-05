@@ -1,0 +1,43 @@
+{"mention": "how much money came in from sales", "kind": "metric", "name": "revenue"}
+{"mention": "total value of goods sold including shipping", "kind": "metric", "name": "gmv"}
+{"mention": "how much did shipping bring in", "kind": "metric", "name": "freight_revenue"}
+{"mention": "number of products shipped out to buyers", "kind": "metric", "name": "items_sold"}
+{"mention": "how many purchases did people make", "kind": "metric", "name": "orders"}
+{"mention": "average spend per purchase", "kind": "metric", "name": "aov"}
+{"mention": "how many distinct people bought something", "kind": "metric", "name": "unique_customers"}
+{"mention": "total amount customers actually paid", "kind": "metric", "name": "payment_value"}
+{"mention": "typical number of payment instalments", "kind": "metric", "name": "avg_installments"}
+{"mention": "share of orders that were called off", "kind": "metric", "name": "cancellation_rate"}
+{"mention": "how many orders were called off", "kind": "metric", "name": "canceled_orders"}
+{"mention": "share of buyers who come back to purchase again", "kind": "metric", "name": "repeat_customer_rate"}
+{"mention": "how often do customers return to order again", "kind": "metric", "name": "repeat_customer_rate"}
+{"mention": "orders that reached the buyer", "kind": "metric", "name": "delivered_orders"}
+{"mention": "orders that arrived after the promised date", "kind": "metric", "name": "late_orders"}
+{"mention": "percentage of parcels that arrived late", "kind": "metric", "name": "late_delivery_rate"}
+{"mention": "how often were parcels punctual", "kind": "metric", "name": "on_time_delivery_rate"}
+{"mention": "how long does a parcel take to reach the customer", "kind": "metric", "name": "avg_delivery_days"}
+{"mention": "how happy are customers with their reviews", "kind": "metric", "name": "avg_review_score"}
+{"mention": "customer satisfaction on a five point scale", "kind": "metric", "name": "avg_review_score"}
+{"mention": "every order placed including the cancelled ones", "kind": "metric", "name": "orders_placed"}
+{"mention": "money brought in by the business", "kind": "metric", "name": "revenue"}
+{"mention": "gross value of everything sold", "kind": "metric", "name": "gmv"}
+{"mention": "how many units did we move", "kind": "metric", "name": "items_sold"}
+{"mention": "how many customers placed an order", "kind": "metric", "name": "unique_customers"}
+{"mention": "how many orders went through and were not cancelled", "kind": "metric", "name": "orders"}
+{"mention": "amount of money paid by buyers", "kind": "metric", "name": "payment_value"}
+{"mention": "how often do parcels get delivered after the estimated day", "kind": "metric", "name": "late_delivery_rate"}
+{"mention": "average time from purchase to doorstep", "kind": "metric", "name": "avg_delivery_days"}
+{"mention": "how many items were sold per order on average", "kind": "metric", "name": "items_sold"}
+{"mention": "returning shoppers as a fraction of all shoppers", "kind": "metric", "name": "repeat_customer_rate"}
+{"mention": "which part of Brazil the buyer lives in", "kind": "dimension", "name": "order_item__customer_state"}
+{"mention": "product type of the item", "kind": "dimension", "name": "order_item__product_category"}
+{"mention": "where the seller is located", "kind": "dimension", "name": "order_item__seller_state"}
+{"mention": "vendor identifier", "kind": "dimension", "name": "order_item__seller_id"}
+{"mention": "payment instrument the buyer used", "kind": "dimension", "name": "order__payment_type"}
+{"mention": "current state of the order", "kind": "dimension", "name": "order_item__order_status"}
+{"mention": "delivery outcome of the order", "kind": "dimension", "name": "order__delivery_status"}
+{"mention": "town where the customer lives", "kind": "dimension", "name": "order__customer_city"}
+{"mention": "star rating bucket of the review", "kind": "dimension", "name": "order__review_score"}
+{"mention": "breakdown per calendar month", "kind": "dimension", "name": "metric_time"}
+{"mention": "over the years", "kind": "dimension", "name": "metric_time"}
+{"mention": "day by day breakdown", "kind": "dimension", "name": "metric_time"}

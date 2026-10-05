@@ -1,0 +1,25 @@
+[project]
+name = "governed-analytics-warehouse"
+version = "0.1.0"
+description = "dbt project tooling for the Olist warehouse"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "dbt-core==1.11.9",
+    "dbt-postgres==1.10.0",
+    "dbt-metricflow==0.15.0",
+    "psycopg[binary]==3.2.11",
+]
+
+[dependency-groups]
+dev = [
+    "pytest==8.4.2",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-ra --strict-markers"
+markers = ["integration: needs a running database and built marts"]

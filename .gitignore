@@ -1,0 +1,55 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.coverage
+htmlcov/
+*.egg-info/
+build/
+dist/
+
+# Node
+node_modules/
+frontend/dist/
+.vite/
+
+# Data (only the small sample is committed)
+dataset/raw/
+dataset/benchmarks/bird_mini_dev/
+dataset/benchmarks/spider/
+dataset/geo/*.zip
+dataset/downloads/
+
+# dbt and Dagster artifacts
+warehouse/dbt_project/target/
+warehouse/dbt_project/dbt_packages/
+warehouse/dbt_project/logs/
+orchestration/dagster_project/.dagster/
+orchestration/dagster_project/storage/
+.dagster/
+
+# Evaluation outputs generated locally
+evals/results/*.tmp.json
+
+# Editors and OS
+.idea/
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+Thumbs.db
+
+# Local embedding model cache (downloaded at first use)
+.cache/
+
+# Generated tool state
+warehouse/dbt_project/.user.yml
+frontend/*.tsbuildinfo

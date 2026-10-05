@@ -1,0 +1,16 @@
+# Connection profile for dbt. Credentials come from environment variables, never from this file.
+# Run dbt from the Makefile targets, which load .env first.
+governed_analytics:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('LOADER_DB_HOST', 'localhost') }}"
+      port: "{{ env_var('LOADER_DB_PORT', '5433') | as_number }}"
+      user: loader
+      password: "{{ env_var('LOADER_DB_PASSWORD') }}"
+      dbname: "{{ env_var('POSTGRES_DB', 'copilot') }}"
+      schema: analytics
+      threads: 4
+      connect_timeout: 10
+      keepalives_idle: 30

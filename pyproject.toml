@@ -1,0 +1,50 @@
+[project]
+name = "governed-analytics-copilot"
+version = "0.1.0"
+description = "Meridian Data Copilot: governed natural language analytics over the Olist dataset"
+requires-python = ">=3.12,<3.13"
+dependencies = []
+
+[tool.uv]
+package = false
+
+[tool.uv.workspace]
+members = [
+    "backend",
+    "orchestration/dagster_project",
+    "warehouse",
+    "scripts",
+]
+
+[dependency-groups]
+dev = [
+    "pre-commit==4.3.0",
+    "ruff==0.14.0",
+    "mypy==1.18.2",
+    "pytest==8.4.2",
+    "bandit==1.8.6",
+    "pip-audit==2.9.0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = [".", "backend", "scripts"]
+extend-exclude = ["warehouse/dbt_project/target", "warehouse/dbt_project/dbt_packages"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S", "SIM", "PL", "RUF"]
+ignore = ["PLR0913", "S101"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app"]
+
+[tool.ruff.lint.per-file-ignores]
+"backend/tests/**" = ["S101", "PLR2004"]
+"tests/**" = ["S101", "PLR2004"]
+"scripts/tests/**" = ["S101", "PLR2004"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+ignore_missing_imports = false

@@ -1,0 +1,16 @@
+[project]
+name = "governed-analytics-orchestration"
+version = "0.1.0"
+description = "Dagster definitions for ingestion, dbt, catalog indexing and evaluation"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "dagster==1.13.25",
+    "dagster-webserver==1.13.25",
+]
+
+[build-system]
+requires = ["hatchling==1.27.0"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["dagster_project"]

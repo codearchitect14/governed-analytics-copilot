@@ -1,0 +1,123 @@
+version: 2
+
+models:
+  - name: fct_order_items
+    description: >
+      Order item grain fact table. Revenue is the item price. Filter canceled orders with
+      is_canceled when computing revenue. Currency is Brazilian Real (BRL).
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [order_id, order_item_id]
+    columns:
+      - name: order_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('fct_orders')
+                field: order_id
+      - name: product_id
+        data_tests:
+          - not_null
+      - name: seller_id
+        data_tests:
+          - not_null
+      - name: customer_unique_id
+        data_tests:
+          - not_null
+      - name: category_translation_status
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [translated, untranslated, missing]
+      - name: order_status
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [created, approved, invoiced, processing, shipped, delivered, unavailable, canceled]
+      - name: line_revenue
+        description: Item price in BRL.
+        data_tests:
+          - not_null
+
+  - name: fct_orders
+    description: >
+      Order grain fact table. items_total must equal the sum of item prices in fct_order_items.
+    columns:
+      - name: order_id
+        data_tests: [unique, not_null]
+      - name: customer_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_customers')
+                field: customer_id
+      - name: items_total
+        data_tests: [not_null]
+      - name: review_score
+        description: Latest review score. Null when the order has no review.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5]
+                quote: false
+
+  - name: dim_customers
+    description: One row per customer_id. Use customer_unique_id for customer counts.
+    columns:
+      - name: customer_id
+        data_tests: [unique, not_null]
+      - name: customer_unique_id
+        data_tests: [not_null]
+
+  - name: dim_products
+    columns:
+      - name: product_id
+        data_tests: [unique, not_null]
+      - name: category_translation_status
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [translated, untranslated, missing]
+
+  - name: dim_sellers
+    columns:
+      - name: seller_id
+        data_tests: [unique, not_null]
+
+  - name: dim_date
+    columns:
+      - name: date_key
+        data_tests: [unique, not_null]
+
+  - name: agg_revenue_monthly
+    columns:
+      - name: month_start_date
+        data_tests: [unique, not_null]
+      - name: revenue
+        data_tests: [not_null]
+
+  - name: agg_category_monthly
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [month_start_date, product_category_en]
+
+  - name: agg_state_monthly
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [month_start_date, customer_state]
+
+  - name: agg_delivery_monthly
+    columns:
+      - name: month_start_date
+        data_tests: [unique, not_null]
+
+  - name: agg_cohort_retention
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [cohort_month, months_since_cohort]

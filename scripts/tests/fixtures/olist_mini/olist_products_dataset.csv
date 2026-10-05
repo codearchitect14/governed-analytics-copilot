@@ -1,0 +1,6 @@
+product_id,product_category_name,product_name_lenght,product_description_lenght,product_photos_qty,product_weight_g,product_length_cm,product_height_cm,product_width_cm
+P1,cama_mesa_banho,40,300,2,900,30,10,20
+P2,esporte_lazer,55,500,3,1200,40,20,30
+P3,moveis_decoracao,30,200,1,5000,60,40,50
+P4,,,,,,,,
+P5,pc_gamer,20,100,1,3000,40,30,20

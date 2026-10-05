@@ -1,0 +1,197 @@
+version: 2
+
+metrics:
+  - name: revenue
+    label: Revenue
+    description: Sum of item prices on orders that are not canceled. Currency BRL.
+    type: simple
+    type_params:
+      measure: revenue_amount
+    meta:
+      synonyms: [sales, turnover, income, takings]
+
+  - name: gmv
+    label: Gross merchandise value
+    description: Item prices plus freight on orders that are not canceled. Currency BRL.
+    type: simple
+    type_params:
+      measure: gmv_amount
+    meta:
+      synonyms: [gross merchandise value, total value sold]
+
+  - name: freight_revenue
+    label: Freight revenue
+    description: Freight charged on orders that are not canceled. Currency BRL.
+    type: simple
+    type_params:
+      measure: freight_amount
+    meta:
+      synonyms: [shipping revenue, freight]
+
+  - name: items_sold
+    label: Items sold
+    description: Number of order items on orders that are not canceled.
+    type: simple
+    type_params:
+      measure: items_sold_count
+    meta:
+      synonyms: [units, units sold, quantity sold, pieces]
+
+  - name: orders
+    label: Orders
+    description: Distinct orders that are not canceled.
+    type: simple
+    type_params:
+      measure: active_order_count
+    meta:
+      synonyms: [order count, number of orders, purchases]
+
+  - name: orders_placed
+    label: Orders placed
+    description: All orders, including canceled ones.
+    type: simple
+    type_params:
+      measure: orders_placed_count
+    meta:
+      synonyms: [all orders]
+
+  - name: aov
+    label: Average order value
+    description: Revenue divided by orders that are not canceled. Currency BRL.
+    type: derived
+    type_params:
+      expr: revenue / orders
+      metrics:
+        - name: revenue
+        - name: orders
+    meta:
+      synonyms: [average order value, basket size, average basket, avg order]
+
+  - name: unique_customers
+    label: Unique customers
+    description: Distinct real customers (customer_unique_id) with at least one order that is not canceled.
+    type: simple
+    type_params:
+      measure: unique_customer_count
+    meta:
+      synonyms: [customers, buyers, shoppers]
+
+  - name: payment_value
+    label: Payment value
+    description: Total paid on orders that are not canceled, including interest and vouchers. Currency BRL.
+    type: simple
+    type_params:
+      measure: payment_value_amount
+    meta:
+      synonyms: [payments, amount paid, payment total]
+
+  - name: avg_installments
+    label: Average installments
+    description: Average maximum number of payment installments per order that is not canceled.
+    type: simple
+    type_params:
+      measure: installments_avg
+    meta:
+      synonyms: [installments, average installments, payment installments]
+
+  - name: canceled_orders
+    label: Canceled orders
+    description: Orders with status canceled.
+    type: simple
+    type_params:
+      measure: canceled_order_count
+    meta:
+      synonyms: [cancellations, canceled]
+
+  - name: cancellation_rate
+    label: Cancellation rate
+    description: Canceled orders divided by all orders placed.
+    type: derived
+    type_params:
+      expr: 1.0 * canceled_orders / orders_placed
+      metrics:
+        - name: canceled_orders
+        - name: orders_placed
+    meta:
+      synonyms: [cancel rate, canceled share]
+
+  - name: repeat_orders
+    label: Repeat orders
+    description: Orders placed by a customer who had already ordered before (not canceled).
+    type: simple
+    type_params:
+      measure: repeat_order_count
+    meta:
+      synonyms: [returning customer orders]
+
+  - name: repeat_customer_rate
+    label: Repeat customer rate
+    description: Share of orders that come from returning customers, that is, orders after the first one.
+    type: derived
+    type_params:
+      expr: 1.0 * repeat_orders / orders
+      metrics:
+        - name: repeat_orders
+        - name: orders
+    meta:
+      synonyms: [repeat rate, returning customer rate, retention rate, loyalty rate]
+
+  - name: delivered_orders
+    label: Delivered orders
+    description: Orders with a delivery date.
+    type: simple
+    type_params:
+      measure: delivered_order_count
+    meta:
+      synonyms: [deliveries]
+
+  - name: late_orders
+    label: Late orders
+    description: Delivered orders that arrived after the estimated delivery date.
+    type: simple
+    type_params:
+      measure: late_order_count
+    meta:
+      synonyms: [late deliveries, delayed orders]
+
+  - name: late_delivery_rate
+    label: Late delivery rate
+    description: Late orders divided by delivered orders.
+    type: derived
+    type_params:
+      expr: 1.0 * late_orders / delivered_orders
+      metrics:
+        - name: late_orders
+        - name: delivered_orders
+    meta:
+      synonyms: [late rate, delay rate]
+
+  - name: on_time_delivery_rate
+    label: On time delivery rate
+    description: Delivered orders that arrived on or before the estimated date, divided by delivered orders.
+    type: derived
+    type_params:
+      expr: 1.0 * (delivered_orders - late_orders) / delivered_orders
+      metrics:
+        - name: delivered_orders
+        - name: late_orders
+    meta:
+      synonyms: [on time rate, punctuality, delivery performance]
+
+  - name: avg_delivery_days
+    label: Average delivery days
+    description: Average days from purchase to delivery, delivered orders only.
+    type: simple
+    type_params:
+      measure: delivery_days_avg
+    meta:
+      synonyms: [delivery time, delivery days, lead time, shipping time]
+
+  - name: avg_review_score
+    label: Average review score
+    description: Average review score (1 to 5) of the latest review per order.
+    type: simple
+    type_params:
+      measure: review_score_avg
+    meta:
+      synonyms: [rating, review score, satisfaction, stars, csat]

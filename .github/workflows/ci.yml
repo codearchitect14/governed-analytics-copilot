@@ -1,0 +1,129 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python:
+    name: Python lint, type check and tests
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.8.22"
+          enable-cache: true
+      - run: uv sync --locked --all-packages
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run --package governed-analytics-backend mypy backend/app
+      - run: uv run --package governed-analytics-backend pytest backend/tests
+      - run: uv run --package governed-analytics-scripts pytest scripts/tests
+      - run: uv run --package governed-analytics-warehouse pytest warehouse/tests -m "not integration"
+
+  frontend:
+    name: Frontend lint, type check and build
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.18.2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter frontend lint
+      - run: pnpm --filter frontend typecheck
+      - run: pnpm --filter frontend build
+
+  warehouse:
+    name: Warehouse load and dbt build (committed sample)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.8.22"
+          enable-cache: true
+      - name: Check for committed sample
+        id: sample
+        run: |
+          if [ -f dataset/sample/olist/olist_orders_dataset.csv ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::dataset/sample/olist is not committed yet. Warehouse job skipped."
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Create env file for CI
+        if: steps.sample.outputs.present == 'true'
+        run: cp .env.example .env
+      - name: Start PostgreSQL
+        if: steps.sample.outputs.present == 'true'
+        run: docker compose up -d --wait postgres
+      - name: Load sample and build dbt
+        if: steps.sample.outputs.present == 'true'
+        run: |
+          uv sync --locked --all-packages
+          make data-sample
+      - name: Semantic layer checks
+        if: steps.sample.outputs.present == 'true'
+        run: |
+          make semantic-validate
+          make golden
+      - name: Catalog index and retrieval recall
+        if: steps.sample.outputs.present == 'true'
+        run: |
+          make index
+          make retrieval
+      - name: Stop PostgreSQL
+        if: always() && steps.sample.outputs.present == 'true'
+        run: docker compose down -v
+
+  compose:
+    name: Stack health (docker compose)
+    runs-on: ubuntu-24.04
+    needs: [python, frontend]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create env file for CI
+        run: cp .env.example .env
+      - name: Start stack
+        run: docker compose up -d --build --wait --wait-timeout 300
+      - name: Probe API
+        run: |
+          curl -fsS http://localhost:8010/api/v1/health
+          curl -fsS http://localhost:8010/api/v1/ready
+      - name: Dump logs on failure
+        if: failure()
+        run: docker compose logs --no-color
+      - name: Stop stack
+        if: always()
+        run: docker compose down -v
+
+  security:
+    name: Security scans
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.8.22"
+      - run: uv sync --locked --all-packages
+      - run: uv run --package governed-analytics-backend bandit -q -r backend/app
+      - run: uv tool run pip-audit --locked --strict

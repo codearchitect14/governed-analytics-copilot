@@ -1,0 +1,54 @@
+# Business vocabulary mapped to governed metrics, dimensions and filter values.
+# Every target must exist in the semantic layer (warehouse/dbt_project/models/semantic).
+# Matching is case insensitive and uses whole words or phrases.
+
+metrics:
+  revenue: [revenue, sales, turnover, income, takings, total sales]
+  gmv: [gmv, gross merchandise value, total value sold]
+  freight_revenue: [freight revenue, shipping revenue, freight income]
+  items_sold: [items sold, units sold, units, quantity sold, pieces sold]
+  orders: [orders, order count, number of orders, purchases]
+  orders_placed: [orders placed, all orders]
+  aov: [aov, average order value, basket size, average basket, avg order value]
+  unique_customers: [unique customers, customers, buyers, shoppers, customer count]
+  payment_value: [payment value, payments, amount paid, payment total]
+  avg_installments: [installments, average installments, payment installments]
+  cancellation_rate: [cancellation rate, cancel rate, canceled share]
+  canceled_orders: [canceled orders, cancelled orders, cancellations]
+  repeat_customer_rate: [repeat rate, repeat customer rate, returning customer rate, retention rate, loyalty rate]
+  repeat_orders: [repeat orders, returning customer orders]
+  delivered_orders: [delivered orders, deliveries]
+  late_orders: [late orders, late deliveries, delayed orders]
+  late_delivery_rate: [late delivery rate, late rate, delay rate]
+  on_time_delivery_rate: [on time delivery rate, on time rate, on time deliveries, punctuality]
+  avg_delivery_days: [delivery time, delivery days, average delivery days, lead time, shipping time]
+  avg_review_score: [review score, average review score, rating, average rating, satisfaction, stars, csat]
+
+dimensions:
+  metric_time: [month, monthly, week, weekly, quarter, quarterly, year, yearly, by day, daily, over time, trend]
+  order_item__customer_state: [region, state, customer state, by state]
+  order_item__product_category: [category, product category, product line, by category]
+  order_item__seller_state: [seller state, seller region]
+  order_item__seller_id: [seller, seller id, merchant]
+  order_item__order_status: [order status, status]
+  order__payment_type: [payment type, payment method, payment mix, how customers paid]
+  order__delivery_status: [delivery status]
+  order__review_score: [review score bucket]
+  order__customer_city: [city, customer city]
+
+# Filter values. A mention such as "SP" becomes a filter on the dimension named here.
+values:
+  order_item__customer_state:
+    SP: [sao paulo, são paulo, sp]
+    RJ: [rio, rio de janeiro, rj]
+    MG: [minas gerais, mg]
+    ES: [espirito santo, espírito santo, es]
+  order__payment_type:
+    credit_card: [credit card, card]
+    boleto: [boleto, bank slip]
+    voucher: [voucher]
+    debit_card: [debit card]
+  order_item__order_status:
+    delivered: [delivered]
+    shipped: [shipped]
+    canceled: [canceled, cancelled]

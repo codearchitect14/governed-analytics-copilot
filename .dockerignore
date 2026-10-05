@@ -1,0 +1,23 @@
+# Keep host artifacts and secrets out of every image build context
+.git
+.github
+.env
+.env.*
+!.env.example
+**/.venv
+**/node_modules
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+**/dist
+**/.vite
+**/.dagster
+dataset/raw
+dataset/downloads
+dataset/benchmarks
+warehouse/dbt_project/target
+warehouse/dbt_project/dbt_packages
+warehouse/dbt_project/logs
+.cache

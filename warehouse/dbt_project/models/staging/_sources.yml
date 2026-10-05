@@ -1,0 +1,28 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: raw
+    description: >
+      Olist Brazilian E-Commerce tables loaded as text by scripts/load_olist.py.
+      No transformation happens at this layer. Staging models apply types, renames and quirk fixes.
+    loader: scripts/load_olist.py
+    tables:
+      - name: customers
+        description: One row per order customer. customer_unique_id identifies the real person.
+      - name: geolocation
+        description: Many rows per zip code prefix. Aggregated in intermediate models.
+      - name: order_items
+        description: One row per item within an order.
+      - name: order_payments
+        description: One row per payment within an order (installments, vouchers).
+      - name: order_reviews
+        description: Can contain several reviews per order.
+      - name: orders
+        description: One row per order.
+      - name: products
+        description: Misspelled source columns product_name_lenght and product_description_lenght.
+      - name: sellers
+        description: One row per seller.
+      - name: product_category_name_translation
+        description: Portuguese to English category names. Some categories are not translated.

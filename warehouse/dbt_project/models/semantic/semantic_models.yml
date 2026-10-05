@@ -1,0 +1,135 @@
+version: 2
+
+semantic_models:
+  - name: order_items
+    description: >
+      Order item grain. Revenue, freight and GMV measures exclude canceled orders.
+      Currency is Brazilian Real (BRL).
+    model: ref('fct_order_items')
+    defaults:
+      agg_time_dimension: purchased_at
+    entities:
+      - name: order_item
+        type: primary
+        expr: order_item_key
+      - name: order
+        type: foreign
+        expr: order_id
+      - name: customer
+        type: foreign
+        expr: customer_unique_id
+      - name: product
+        type: foreign
+        expr: product_id
+      - name: seller
+        type: foreign
+        expr: seller_id
+    dimensions:
+      - name: purchased_at
+        type: time
+        type_params:
+          time_granularity: day
+      - name: customer_state
+        type: categorical
+      - name: seller_state
+        type: categorical
+      - name: seller_id
+        type: categorical
+      - name: product_category
+        type: categorical
+        expr: product_category_en
+      - name: order_status
+        type: categorical
+      - name: is_canceled
+        type: categorical
+    measures:
+      - name: revenue_amount
+        description: Item price on orders that are not canceled.
+        agg: sum
+        expr: "case when not coalesce(is_canceled, false) then line_revenue else 0 end"
+      - name: freight_amount
+        description: Freight value on orders that are not canceled.
+        agg: sum
+        expr: "case when not coalesce(is_canceled, false) then line_freight else 0 end"
+      - name: gmv_amount
+        description: Item price plus freight on orders that are not canceled.
+        agg: sum
+        expr: "case when not coalesce(is_canceled, false) then line_gmv else 0 end"
+      - name: items_sold_count
+        description: Number of items on orders that are not canceled.
+        agg: sum
+        expr: "case when not coalesce(is_canceled, false) then 1 else 0 end"
+      - name: active_order_count
+        description: Distinct orders that are not canceled.
+        agg: count_distinct
+        expr: "case when not coalesce(is_canceled, false) then order_id end"
+      - name: unique_customer_count
+        description: Distinct customers (customer_unique_id) on orders that are not canceled.
+        agg: count_distinct
+        expr: "case when not coalesce(is_canceled, false) then customer_unique_id end"
+
+  - name: orders
+    description: >
+      Order grain. Payment, review and delivery measures. Canceled orders are excluded from
+      payment and installment measures.
+    model: ref('fct_orders')
+    defaults:
+      agg_time_dimension: purchased_at
+    entities:
+      - name: order
+        type: primary
+        expr: order_id
+      - name: customer
+        type: foreign
+        expr: customer_unique_id
+    dimensions:
+      - name: purchased_at
+        type: time
+        type_params:
+          time_granularity: day
+      - name: customer_state
+        type: categorical
+      - name: customer_city
+        type: categorical
+      - name: order_status
+        type: categorical
+      - name: payment_type
+        type: categorical
+        expr: payment_type_primary
+      - name: review_score
+        type: categorical
+      - name: delivery_status
+        type: categorical
+    measures:
+      - name: payment_value_amount
+        description: Payment total on orders that are not canceled.
+        agg: sum
+        expr: "case when not is_canceled then payment_total else 0 end"
+      - name: installments_avg
+        description: Maximum installments per order, on orders that are not canceled.
+        agg: average
+        expr: "case when not is_canceled then payment_installments_max end"
+      - name: orders_placed_count
+        description: All orders, including canceled ones.
+        agg: count
+        expr: order_id
+      - name: canceled_order_count
+        agg: sum
+        expr: "case when is_canceled then 1 else 0 end"
+      - name: delivered_order_count
+        description: Orders with a delivery date.
+        agg: sum
+        expr: "case when delivery_days is not null then 1 else 0 end"
+      - name: late_order_count
+        agg: sum
+        expr: "case when is_late then 1 else 0 end"
+      - name: delivery_days_avg
+        agg: average
+        expr: delivery_days
+      - name: review_score_avg
+        agg: average
+        expr: review_score
+      - name: repeat_order_count
+        description: Orders placed by a customer for the second time or later (not canceled).
+        agg: sum
+        expr: "case when customer_order_seq > 1 then 1 else 0 end"

@@ -1,0 +1,20 @@
+{
+  "name": "governed-analytics-copilot",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Meridian Data Copilot workspace root",
+  "packageManager": "pnpm@10.18.2",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "lint": "pnpm --filter frontend lint",
+    "build": "pnpm --filter frontend build",
+    "test": "pnpm --filter frontend test"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
+}

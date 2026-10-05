@@ -1,0 +1,10 @@
+{"id": "FS01", "question": "How much money came in from sales last quarter?", "plan": {"metrics": ["revenue"], "time_window": {"start": "2017-10-01", "end": "2018-01-01", "grain": "quarter"}}}
+{"id": "FS02", "question": "Monthly orders for the last 12 months", "plan": {"metrics": ["orders"], "group_by": ["metric_time__month"], "time_window": {"start": "2017-09-01", "end": "2018-09-01", "grain": "month"}}}
+{"id": "FS03", "question": "Average delivery days per state", "plan": {"metrics": ["avg_delivery_days"], "group_by": ["order__customer_state"]}}
+{"id": "FS04", "question": "Which product categories generate the most revenue?", "plan": {"metrics": ["revenue"], "group_by": ["order_item__product_category"], "order_by": ["-revenue"], "limit": 10}}
+{"id": "FS05", "question": "Share of orders that were cancelled this year", "plan": {"metrics": ["cancellation_rate"], "time_window": {"start": "2018-01-01", "end": "2018-09-01", "grain": "month"}}}
+{"id": "FS06", "question": "Payment value for boleto payments", "plan": {"metrics": ["payment_value"], "filters": [{"dimension": "order__payment_type", "operator": "=", "value": "boleto"}]}}
+{"id": "FS07", "question": "Average review score by seller state", "plan": {"metrics": ["avg_review_score"], "group_by": ["order_item__seller_state"]}}
+{"id": "FS08", "question": "Items sold in Minas Gerais in 2017", "plan": {"metrics": ["items_sold"], "filters": [{"dimension": "order_item__customer_state", "operator": "=", "value": "MG"}], "time_window": {"start": "2017-01-01", "end": "2018-01-01", "grain": "month"}}}
+{"id": "FS09", "question": "Gross value of goods sold per week", "plan": {"metrics": ["gmv"], "group_by": ["metric_time__week"]}}
+{"id": "FS10", "question": "Average installments for customers in Rio de Janeiro", "plan": {"metrics": ["avg_installments"], "filters": [{"dimension": "order__customer_state", "operator": "=", "value": "RJ"}]}}

@@ -1,0 +1,49 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-yaml
+      - id: check-json
+      - id: check-added-large-files
+        args: ["--maxkb=1024"]
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.14.0
+    hooks:
+      - id: ruff
+        args: ["--fix"]
+        files: ^(backend|orchestration|scripts|tests)/
+      - id: ruff-format
+        files: ^(backend|orchestration|scripts|tests)/
+
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy (backend)
+        entry: uv run --package governed-analytics-backend mypy backend/app
+        language: system
+        pass_filenames: false
+        files: ^backend/app/.*\.py$
+
+  - repo: https://github.com/prettier/prettier
+    rev: 3.6.2
+    hooks:
+      - id: prettier
+        files: ^frontend/.*\.(ts|tsx|css|json|html)$
+        exclude: ^frontend/dist/
+
+  - repo: local
+    hooks:
+      - id: eslint
+        name: eslint (frontend)
+        entry: pnpm --filter frontend lint
+        language: system
+        pass_filenames: false
+        files: ^frontend/src/.*\.(ts|tsx)$
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.28.0
+    hooks:
+      - id: gitleaks

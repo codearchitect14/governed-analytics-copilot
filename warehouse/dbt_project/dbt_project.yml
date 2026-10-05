@@ -1,0 +1,29 @@
+name: governed_analytics
+version: "0.1.0"
+config-version: 2
+
+profile: governed_analytics
+
+model-paths: ["models"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+models:
+  governed_analytics:
+    +persist_docs:
+      relation: true
+      columns: true
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: view
+    marts:
+      +materialized: table
+      aggregates:
+        +materialized: table
+
+# Read only access for the query executor. Runs after every dbt command.
+on-run-end:
+  - "{{ grant_warehouse_ro() }}"
