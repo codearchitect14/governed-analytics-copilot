@@ -1,0 +1,17 @@
+# LLM provider order and free tier budgets. Limits change often: confirm them in each provider console.
+# Enforced locally per process (per minute) and in app.llm_usage (per day).
+providers:
+  groq:
+    priority: 1
+    model: openai/gpt-oss-20b
+    requests_per_minute: 30
+    tokens_per_minute: 8000
+    requests_per_day: 1000
+    tokens_per_day: 200000
+  gemini:
+    priority: 2
+    model: gemini-2.5-flash
+    requests_per_minute: 10
+    tokens_per_minute: 250000
+    requests_per_day: 250
+    tokens_per_day: 250000

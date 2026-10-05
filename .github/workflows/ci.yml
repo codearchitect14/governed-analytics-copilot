@@ -47,6 +47,26 @@ jobs:
       - run: pnpm --filter frontend typecheck
       - run: pnpm --filter frontend build
 
+  backend-database:
+    name: Backend tests against PostgreSQL (auth, RBAC, audit chain)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.8.22"
+          enable-cache: true
+      - name: Create env file for CI
+        run: cp .env.example .env
+      - name: Start PostgreSQL
+        run: docker compose up -d --wait postgres
+      - name: Create test database
+        run: make test-db
+      - name: Run backend tests
+        run: |
+          uv sync --locked --all-packages
+          uv run --package governed-analytics-backend pytest backend/tests -q
+
   warehouse:
     name: Warehouse load and dbt build (committed sample)
     runs-on: ubuntu-24.04

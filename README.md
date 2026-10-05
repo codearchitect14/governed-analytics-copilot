@@ -4,7 +4,7 @@ Governed natural language analytics for business users. Questions are resolved a
 possible, SQL is generated only when needed, role based access is enforced in several layers, every generated query
 is shown, and every request is written to an audit log.
 
-> Status: Phases 0, 1 and 2 (foundation, warehouse, semantic layer). See [Project status](#project-status).
+> Status: Phases 0 to 3 (foundation, warehouse, semantic layer, backend core and authorization). See [Project status](#project-status).
 > The full build plan is in [PROJECT_PLAN.md](PROJECT_PLAN.md).
 
 ## Quick start
@@ -48,6 +48,28 @@ make retrieval           # top 3 recall on paraphrased mentions (target 95 perce
 Metrics, dimensions and the time spine are defined in `warehouse/dbt_project/models/semantic`.
 Business vocabulary is in `dataset/semantic_seed/synonyms.yml`. The embedding model is
 `BAAI/bge-small-en-v1.5` (384 dimensions) run locally through fastembed (ONNX).
+
+### Authentication and demo accounts
+
+```bash
+make migrate        # apply database migrations (app schema)
+make seed-users     # roles, policies and demo accounts (local and test environments only)
+make verify-audit   # verify the audit log hash chain
+```
+
+| Role | Demo account | Access |
+|---|---|---|
+| executive | executive@meridian.example | All marts and aggregates, no raw SQL fallback |
+| regional_manager | regional.manager@meridian.example | Rows for SP, RJ, MG and ES |
+| category_manager | category.manager@meridian.example | Item rows for two categories, no orders mart |
+| seller_partner | seller.partner@meridian.example | Rows for seller S1 only |
+| analyst | analyst@meridian.example | All marts, SQL fallback, customer identifiers masked |
+| admin | admin@meridian.example | User, role and audit administration, no data tables |
+
+Demo password: `DemoOnly-Meridian-2026`. These accounts and the password are for local demonstration only.
+They are not created outside the local and test environments. Set `DEMO_USER_PASSWORD` to use another value.
+
+Run the backend tests against PostgreSQL with `make test-db` and `make test`.
 
 ## Repository layout
 
@@ -93,6 +115,7 @@ Pre-commit hooks are defined in `.pre-commit-config.yaml` (ruff, mypy, prettier,
 | 0 | Foundation: monorepo, compose stack, CI, health endpoints | Complete |
 | 1 | Dataset scripts, raw load, dbt staging, intermediate, marts, aggregates, tests | Built and verified on a fixture. Full-dataset run pending the Kaggle download |
 | 2 | MetricFlow semantic models, 30 plan fixtures, rule resolver, time parser, pgvector catalog index | Built and verified. Fixture data only until the full Olist load |
+| 3 | Migrations, argon2id login with lockout, JWT access and rotating refresh tokens, RBAC, policy engine, hash-chained audit log, rate limiting, security headers | Built and verified with 87 backend tests and a live smoke test |
 
 The 5,000 order sample and the full-data row counts are produced once the Olist archive is available.
 

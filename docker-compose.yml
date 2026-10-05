@@ -4,6 +4,15 @@ x-backend-env: &backend-env
   APP_ENV: ${APP_ENV:-local}
   LOG_LEVEL: ${LOG_LEVEL:-INFO}
   APP_DATABASE_URL: postgresql://app_rw:${APP_RW_DB_PASSWORD}@postgres:5432/${POSTGRES_DB:-copilot}
+  JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env (at least 32 characters)}
+  COOKIE_SECURE: ${COOKIE_SECURE:-true}
+  CORS_ORIGINS: ${CORS_ORIGINS:-["http://localhost:5180"]}
+  WAREHOUSE_RO_DATABASE_URL: postgresql://warehouse_ro:${WAREHOUSE_RO_DB_PASSWORD}@postgres:5432/${POSTGRES_DB:-copilot}
+  WAREHOUSE_RO_DB_PASSWORD: ${WAREHOUSE_RO_DB_PASSWORD}
+  LOADER_DB_HOST: postgres
+  LOADER_DB_PORT: "5432"
+  GROQ_API_KEY: ${GROQ_API_KEY:-}
+  GEMINI_API_KEY: ${GEMINI_API_KEY:-}
 
 services:
   postgres:

@@ -14,3 +14,14 @@ governed_analytics:
       threads: 4
       connect_timeout: 10
       keepalives_idle: 30
+    # Read only target used by the query API (MetricFlow compile and EXPLAIN only).
+    executor:
+      type: postgres
+      host: "{{ env_var('LOADER_DB_HOST', 'localhost') }}"
+      port: "{{ env_var('LOADER_DB_PORT', '5433') | as_number }}"
+      user: warehouse_ro
+      password: "{{ env_var('WAREHOUSE_RO_DB_PASSWORD') }}"
+      dbname: "{{ env_var('POSTGRES_DB', 'copilot') }}"
+      schema: analytics
+      threads: 2
+      connect_timeout: 10

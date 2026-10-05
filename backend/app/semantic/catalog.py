@@ -13,8 +13,9 @@ from pathlib import Path
 from typing import Any, Literal
 
 import psycopg
+from sqlalchemy import text
+from sqlalchemy.engine import Connection
 
-from app.semantic.embeddings import EMBEDDING_DIMENSIONS
 from app.semantic.vocabulary import Vocabulary
 
 EntryKind = Literal["metric", "dimension", "example"]
@@ -70,30 +71,6 @@ def _vector_literal(vector: Sequence[float]) -> str:
     return "[" + ",".join(f"{value:.8f}" for value in vector) + "]"
 
 
-def ensure_schema(connection: psycopg.Connection[tuple[Any, ...]]) -> None:
-    with connection.cursor() as cursor:
-        cursor.execute(
-            f"""
-            CREATE TABLE IF NOT EXISTS app.catalog_embeddings (
-                id BIGSERIAL PRIMARY KEY,
-                kind TEXT NOT NULL CHECK (kind IN ('metric', 'dimension', 'example')),
-                name TEXT NOT NULL,
-                content TEXT NOT NULL,
-                model TEXT NOT NULL,
-                embedding VECTOR({EMBEDDING_DIMENSIONS}) NOT NULL,
-                indexed_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-                UNIQUE (kind, name)
-            )
-            """
-        )
-        cursor.execute(
-            """
-            CREATE INDEX IF NOT EXISTS catalog_embeddings_hnsw
-            ON app.catalog_embeddings USING hnsw (embedding vector_cosine_ops)
-            """
-        )
-
-
 def replace_index(
     connection: psycopg.Connection[tuple[Any, ...]],
     entries: Sequence[CatalogEntry],
@@ -103,7 +80,7 @@ def replace_index(
     if len(entries) != len(vectors):
         raise ValueError("every catalog entry needs exactly one vector")
     with connection.transaction(), connection.cursor() as cursor:
-        ensure_schema(connection)
+        # The table and its HNSW index are created by the database migrations.
         cursor.execute("DELETE FROM app.catalog_embeddings")
         for entry, vector in zip(entries, vectors, strict=True):
             cursor.execute(
@@ -117,36 +94,39 @@ def replace_index(
 
 
 def search(
-    connection: psycopg.Connection[tuple[Any, ...]],
+    connection: Connection,
     query_vector: Sequence[float],
     limit: int = 3,
     kinds: Sequence[EntryKind] | None = None,
 ) -> list[SearchHit]:
+    """Nearest catalog entries by cosine similarity. The filter on kind is bound, not concatenated."""
     literal = _vector_literal(query_vector)
-    with connection.cursor() as cursor:
-        if kinds:
-            cursor.execute(
+    if kinds:
+        rows = connection.execute(
+            text(
                 """
-                SELECT kind, name, content, 1 - (embedding <=> %s::vector) AS score
+                SELECT kind, name, content, 1 - (embedding <=> CAST(:v AS vector)) AS score
                 FROM app.catalog_embeddings
-                WHERE kind = ANY(%s)
-                ORDER BY embedding <=> %s::vector
-                LIMIT %s
-                """,
-                (literal, list(kinds), literal, limit),
-            )
-        else:
-            cursor.execute(
+                WHERE kind = ANY(:kinds)
+                ORDER BY embedding <=> CAST(:v AS vector)
+                LIMIT :limit
                 """
-                SELECT kind, name, content, 1 - (embedding <=> %s::vector) AS score
+            ),
+            {"v": literal, "kinds": list(kinds), "limit": limit},
+        ).all()
+    else:
+        rows = connection.execute(
+            text(
+                """
+                SELECT kind, name, content, 1 - (embedding <=> CAST(:v AS vector)) AS score
                 FROM app.catalog_embeddings
-                ORDER BY embedding <=> %s::vector
-                LIMIT %s
-                """,
-                (literal, literal, limit),
-            )
-        rows = cursor.fetchall()
+                ORDER BY embedding <=> CAST(:v AS vector)
+                LIMIT :limit
+                """
+            ),
+            {"v": literal, "limit": limit},
+        ).all()
     return [
-        SearchHit(kind=str(kind), name=str(name), content=str(content), score=float(score))
+        SearchHit(kind=str(kind), name=str(name), content=str(content), score=float(str(score)))
         for kind, name, content, score in rows
     ]

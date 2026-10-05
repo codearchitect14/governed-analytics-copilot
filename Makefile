@@ -56,10 +56,26 @@ index: ## Rebuild the catalog embedding index in pgvector (app schema)
 retrieval: ## Measure top 3 retrieval recall on paraphrased metric and dimension mentions
 	$(UV) run --package governed-analytics-backend python -m app.semantic.evaluate_retrieval --database-url "$$APP_DATABASE_URL_HOST"
 
-seed: ## Backfill synthetic operations history (Phase 7)
-	@echo "seed: not implemented until Phase 7"
+migrate: ## Apply application database migrations (app schema)
+	cd backend && APP_DATABASE_URL="$$APP_DATABASE_URL_HOST" $(UV) run --package governed-analytics-backend alembic upgrade head
 
-test: ## Run unit tests for all Python packages (integration tests are excluded)
+seed-users: ## Create roles, policies and demo accounts (local and test environments only)
+	APP_DATABASE_URL="$$APP_DATABASE_URL_HOST" $(UV) run --package governed-analytics-backend python -m app.db.seed
+
+verify-audit: ## Verify the audit log hash chain (exit 1 when a row was changed or removed)
+	APP_DATABASE_URL="$$APP_DATABASE_URL_HOST" $(UV) run --package governed-analytics-backend python scripts/verify_audit_chain.py
+
+test-db: ## Create the isolated test database (copilot_test) with extensions and app schema
+	$(COMPOSE) exec -T postgres psql -U $${POSTGRES_SUPERUSER:-postgres} -d postgres -tc "SELECT 1 FROM pg_database WHERE datname = 'copilot_test'" | grep -q 1 || 		$(COMPOSE) exec -T postgres psql -U $${POSTGRES_SUPERUSER:-postgres} -d postgres -c "CREATE DATABASE copilot_test"
+	$(COMPOSE) exec -T postgres psql -U $${POSTGRES_SUPERUSER:-postgres} -d copilot_test -v ON_ERROR_STOP=1 		-c "CREATE EXTENSION IF NOT EXISTS vector" -c "CREATE EXTENSION IF NOT EXISTS pg_trgm" 		-c "CREATE SCHEMA IF NOT EXISTS app AUTHORIZATION app_rw"
+
+smoke-llm: ## Make one real request to each configured LLM provider (needs API keys in .env)
+	$(UV) run --package governed-analytics-backend python scripts/smoke_llm.py
+
+seed: ## Create roles, policies and demo accounts (alias of seed-users)
+	$(MAKE) seed-users
+
+test: ## Run unit tests for all Python packages (backend tests need make test-db)
 	$(UV) run --package governed-analytics-backend pytest backend/tests
 	$(UV) run --package governed-analytics-scripts pytest scripts/tests
 	$(UV) run --package governed-analytics-warehouse pytest warehouse/tests -m "not integration"

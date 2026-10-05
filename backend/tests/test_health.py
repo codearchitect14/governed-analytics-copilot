@@ -63,8 +63,9 @@ def test_ready_returns_ok_when_database_reachable(
     assert response.json() == {"status": "ok", "checks": {"database": "ok"}}
 
 
-def test_settings_default_to_local_environment() -> None:
+def test_settings_default_to_local_environment(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("APP_ENV", raising=False)
     get_settings.cache_clear()
-    settings = Settings()
+    settings = Settings(_env_file=None)
 
     assert settings.app_env == "local"

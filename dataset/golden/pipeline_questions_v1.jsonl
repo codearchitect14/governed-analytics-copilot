@@ -1,0 +1,20 @@
+{"id": "Q01", "role": "executive", "question": "What is the total revenue?", "expect_route": "rule", "expect_decision": "allowed"}
+{"id": "Q02", "role": "executive", "question": "How many orders were placed?", "expect_route": "rule", "expect_decision": "allowed"}
+{"id": "Q03", "role": "executive", "question": "Revenue by month", "expect_route": "rule", "expect_decision": "allowed"}
+{"id": "Q04", "role": "executive", "question": "Average order value by month", "expect_route": "rule", "expect_decision": "allowed"}
+{"id": "Q05", "role": "executive", "question": "Revenue by product category", "expect_route": "rule", "expect_decision": "allowed"}
+{"id": "Q06", "role": "executive", "question": "Items sold by seller state", "expect_route": "rule", "expect_decision": "allowed"}
+{"id": "Q07", "role": "executive", "question": "Average review score by customer state", "expect_route": "rule", "expect_decision": "allowed"}
+{"id": "Q08", "role": "executive", "question": "On time delivery rate", "expect_route": "rule", "expect_decision": "allowed"}
+{"id": "Q09", "role": "executive", "question": "Cancellation rate", "expect_route": "rule", "expect_decision": "allowed"}
+{"id": "Q10", "role": "executive", "question": "Revenue in SP last month", "expect_route": "rule", "expect_decision": "allowed"}
+{"id": "Q11", "role": "regional_manager", "question": "Revenue by customer state", "expect_route": "rule", "expect_decision": "allowed"}
+{"id": "Q12", "role": "category_manager", "question": "Revenue by product category", "expect_route": "rule", "expect_decision": "allowed"}
+{"id": "Q13", "role": "category_manager", "question": "Payment value by payment type", "expect_route": "rule", "expect_decision": "denied"}
+{"id": "Q14", "role": "seller_partner", "question": "Items sold by seller state", "expect_route": "rule", "expect_decision": "allowed"}
+{"id": "Q15", "role": "analyst", "question": "Unique customers by month", "expect_route": "rule", "expect_decision": "allowed"}
+{"id": "Q16", "role": "admin", "question": "Revenue by month", "expect_route": "rule", "expect_decision": "denied"}
+{"id": "Q17", "role": "analyst", "question": "How is the business doing over time", "expect_route": "llm_plan", "expect_decision": "allowed", "script": ["{\"intent\": \"metric_query\", \"metrics\": [\"gmv\"], \"group_by\": [\"metric_time__month\"]}"]}
+{"id": "Q18", "role": "analyst", "question": "Country wide product line mix analysis", "expect_route": "llm_sql", "expect_decision": "allowed", "script": ["{\"intent\": \"sql_fallback\"}", "{\"sql\": \"SELECT customer_state, COUNT(*) AS orders FROM analytics.fct_orders GROUP BY customer_state\"}"]}
+{"id": "Q19", "role": "executive", "question": "How did we do", "expect_route": "none", "expect_decision": "clarify", "script": ["{\"intent\": \"clarify\", \"clarification\": \"Which metric and period do you mean?\"}"]}
+{"id": "Q20", "role": "executive", "question": "What is the weather tomorrow", "expect_route": "none", "expect_decision": "denied", "script": ["{\"intent\": \"refuse\", \"refusal_reason\": \"This question is outside the sales data.\"}"]}

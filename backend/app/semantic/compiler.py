@@ -114,16 +114,25 @@ class MetricFlowCompiler:
         executable: str = "mf",
         timeout_seconds: float = 60.0,
         profiles_dir: Path | None = None,
+        target: str = "executor",
+        build_dir: Path | None = None,
     ) -> None:
         self.project_dir = project_dir
         self.executable = executable
         self.timeout_seconds = timeout_seconds
         self.profiles_dir = profiles_dir or project_dir
+        self.target = target
+        self.build_dir = build_dir or Path(tempfile.gettempdir()) / "governed-analytics-dbt"
 
     def _environment(self) -> dict[str, str]:
+        # The read only target is used: MetricFlow only compiles, it never writes.
         return {
             **os.environ,
             "DBT_PROFILES_DIR": str(self.profiles_dir),
+            "DBT_TARGET": self.target,
+            "DBT_TARGET_PATH": str(self.build_dir / "target"),
+            "DBT_LOG_PATH": str(self.build_dir / "logs"),
+            "DBT_PACKAGES_INSTALL_PATH": str(self.project_dir / "dbt_packages"),
             "PYTHONIOENCODING": "utf-8",
         }
 
@@ -145,7 +154,11 @@ class MetricFlowCompiler:
             ) from error
 
     def explain(self, plan: MetricPlan) -> str:
-        completed = self._run(build_arguments(plan, executable=self.executable, explain=True))
+        arguments = build_arguments(plan, executable=self.executable, explain=True)
+        completed = self._run(arguments)
+        if completed.returncode != 0:
+            # One retry: a transient failure while dbt writes its build state is not a plan error.
+            completed = self._run(arguments)
         if completed.returncode != 0:
             raise CompilerError(f"MetricFlow failed: {completed.stderr[-500:]}")
         return extract_sql(completed.stdout)

@@ -18,7 +18,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
-import psycopg
+from sqlalchemy import create_engine
 
 from app.semantic import catalog
 from app.semantic.embeddings import Embedder
@@ -71,12 +71,14 @@ def main(argv: Sequence[str] | None = None) -> int:
     mentions = load_mentions(args.mentions)
     embedder = Embedder()
     hits_by_mention: dict[str, list[catalog.SearchHit]] = {}
-    with psycopg.connect(args.database_url) as connection:
+    engine = create_engine(args.database_url.replace("postgresql://", "postgresql+psycopg://", 1))
+    with engine.connect() as connection:
         for mention in mentions:
             vector = embedder.embed_query(mention.text)
             hits_by_mention[mention.text] = catalog.search(
                 connection, vector, limit=args.k, kinds=("metric", "dimension")
             )
+    engine.dispose()
 
     recall = recall_at_k(mentions, hits_by_mention)
     for mention in mentions:
