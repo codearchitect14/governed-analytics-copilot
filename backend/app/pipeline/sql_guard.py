@@ -19,7 +19,7 @@ from typing import Any
 
 import sqlglot
 from sqlglot import exp
-from sqlglot.errors import ParseError
+from sqlglot.errors import ParseError, SqlglotError, TokenError
 
 from app.policy.engine import ANALYTICS_SCHEMA, EffectivePolicy, PolicyDenied, RowFilter
 
@@ -90,7 +90,7 @@ def parse_single_statement(sql: str) -> exp.Expression:
             raise SqlRejected("Comments and multiple statements are not allowed.", "text")
     try:
         statements = [item for item in sqlglot.parse(text, read=DIALECT) if item is not None]
-    except ParseError as error:
+    except (ParseError, TokenError, SqlglotError) as error:
         raise SqlRejected("The generated query is not valid PostgreSQL.", "parse") from error
     if len(statements) != 1:
         raise SqlRejected("Exactly one statement is allowed.", "statement_count")

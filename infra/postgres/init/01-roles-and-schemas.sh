@@ -45,9 +45,7 @@ GRANT USAGE ON SCHEMA raw TO loader;
 GRANT USAGE, CREATE ON SCHEMA analytics TO loader;
 
 -- warehouse_ro: SELECT only on analytics. No access to raw or app.
-GRANT USAGE ON SCHEMA analytics TO warehouse_ro;
-ALTER DEFAULT PRIVILEGES FOR ROLE loader IN SCHEMA analytics
-  GRANT SELECT ON TABLES TO warehouse_ro;
+-- warehouse_ro read access is granted per model by the dbt post-run macro (marts only, with row level security)
 
 -- app_rw: owns the app schema only.
 REVOKE ALL ON SCHEMA raw FROM app_rw;

@@ -8,7 +8,7 @@ from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
 from app import __version__
-from app.api import admin, auth, chat, health
+from app.api import admin, auth, chat, dashboard, health, ops
 from app.core.config import get_settings
 from app.core.logging import configure_logging
 from app.core.middleware import RequestIdMiddleware
@@ -51,6 +51,8 @@ def create_app() -> FastAPI:
     app.include_router(auth.router)
     app.include_router(admin.router)
     app.include_router(chat.router)
+    app.include_router(dashboard.router)
+    app.include_router(ops.router)
 
     @app.exception_handler(Exception)
     async def unhandled_error(request: Request, exc: Exception) -> JSONResponse:

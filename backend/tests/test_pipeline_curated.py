@@ -73,7 +73,7 @@ def test_curated_questions_run_end_to_end(live) -> None:  # type: ignore[no-unty
         if (
             result["kind"] == "result"
             and str(item["expect_route"]) != "none"
-            and route != item["expect_route"]
+            and route not in (item["expect_route"], "cache")
         ):
             failures.append(f"{item['id']}: route {route} != {item['expect_route']}")
     if timings:

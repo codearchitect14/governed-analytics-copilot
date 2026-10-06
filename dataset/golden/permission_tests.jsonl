@@ -1,0 +1,10 @@
+{"id": "P-R01", "role": "regional_manager", "scopes": {"regions": ["RJ"]}, "question": "Revenue by customer state", "expect_decision": "allowed", "column": "order_item__customer_state", "allowed": ["RJ"]}
+{"id": "P-R02", "role": "regional_manager", "scopes": {"regions": ["SP"]}, "question": "Revenue by customer state", "expect_decision": "allowed", "column": "order_item__customer_state", "allowed": ["SP"]}
+{"id": "P-R03", "role": "regional_manager", "scopes": {}, "question": "Revenue by customer state", "expect_decision": "allowed", "column": "order_item__customer_state", "allowed": []}
+{"id": "P-C01", "role": "category_manager", "scopes": {"categories": ["bed_bath_table"]}, "question": "Revenue by product category", "expect_decision": "allowed", "column": "order_item__product_category", "allowed": ["bed_bath_table"]}
+{"id": "P-C02", "role": "category_manager", "scopes": {"categories": ["sports_leisure"]}, "question": "Revenue by product category", "expect_decision": "allowed", "column": "order_item__product_category", "allowed": ["sports_leisure"]}
+{"id": "P-C03", "role": "category_manager", "scopes": {"categories": ["bed_bath_table"]}, "question": "Payment value by payment type", "expect_decision": "denied", "column": null, "allowed": []}
+{"id": "P-S01", "role": "seller_partner", "scopes": {"seller_id": "S1"}, "question": "Items sold by seller state", "expect_decision": "allowed", "column": "order_item__seller_state", "allowed": ["SP"]}
+{"id": "P-S02", "role": "seller_partner", "scopes": {"seller_id": "S2"}, "question": "Items sold by seller state", "expect_decision": "allowed", "column": "order_item__seller_state", "allowed": ["RJ"]}
+{"id": "P-A01", "role": "analyst", "scopes": {}, "question": "Unique customers by month", "expect_decision": "allowed", "column": null, "allowed": []}
+{"id": "P-X01", "role": "admin", "scopes": {}, "question": "Revenue by month", "expect_decision": "denied", "column": null, "allowed": []}

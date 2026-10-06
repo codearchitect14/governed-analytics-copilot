@@ -104,9 +104,9 @@ class DatabaseUsageStore:
             connection.execute(
                 text(
                     """
-                    INSERT INTO app.llm_usage (usage_date, provider, model, requests, tokens_in, tokens_out)
-                    VALUES (:day, :provider, :model, 1, :tokens_in, :tokens_out)
-                    ON CONFLICT (usage_date, provider, model) DO UPDATE SET
+                    INSERT INTO app.llm_usage (usage_date, provider, model, requests, tokens_in, tokens_out, is_synthetic)
+                    VALUES (:day, :provider, :model, 1, :tokens_in, :tokens_out, FALSE)
+                    ON CONFLICT (usage_date, provider, model, is_synthetic) DO UPDATE SET
                         requests = app.llm_usage.requests + 1,
                         tokens_in = app.llm_usage.tokens_in + EXCLUDED.tokens_in,
                         tokens_out = app.llm_usage.tokens_out + EXCLUDED.tokens_out

@@ -36,6 +36,7 @@ from app.pipeline.executor import ColumnCatalog, CostRejected
 from app.pipeline.shape import humanize
 from app.policy.engine import EffectivePolicy, PolicyDenied
 from app.policy.loader import load_effective_policy
+from app.policy.rls import rls_settings
 from app.semantic import catalog
 from app.semantic.compiler import CompilerError, MetricFlowCompiler
 from app.semantic.embeddings import Embedder
@@ -361,10 +362,14 @@ class _Run:
         if self.plan is not None and self.plan.limit is not None:
             max_rows = min(max_rows, self.plan.limit)
         try:
+            filters = rls_settings(self.policy)
             executor.enforce_cost_ceiling(
-                self.s.executor_engine, self.final_sql, self.s.settings.explain_cost_ceiling
+                self.s.executor_engine,
+                self.final_sql,
+                self.s.settings.explain_cost_ceiling,
+                filters,
             )
-            result = executor.execute(self.s.executor_engine, self.final_sql, max_rows)
+            result = executor.execute(self.s.executor_engine, self.final_sql, max_rows, filters)
         except CostRejected as error:
             raise PipelineError(
                 "This question would scan too much data. Narrow the period or add a filter.",

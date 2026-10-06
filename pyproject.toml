@@ -55,7 +55,17 @@ known-first-party = ["app"]
 "backend/tests/test_llm_gateway.py" = ["E501", "PLC0415"]
 "backend/tests/test_pipeline_live.py" = ["E501", "PLC0415"]
 "backend/tests/test_pipeline_curated.py" = ["E501", "F811"]
+# Test modules: fixtures are re-imported by name, SQL is generated test data, and property tests build SQL
+"backend/tests/test_governance.py" = ["E501", "F811", "PLC0415"]
+"backend/tests/test_property_sql.py" = ["S608"]
 "backend/app/api/admin.py" = ["S608", "E501"]
+# Dashboard SQL is built only from validated Filters and rendered literals, then guarded
+"backend/app/dashboard/queries.py" = ["S608", "E501"]
+"backend/app/ops/**" = ["S608", "E501"]
+"backend/app/api/ops.py" = ["E501"]
+"backend/app/dashboard/service.py" = ["E501"]
+"backend/app/api/dashboard.py" = ["E501"]
+
 "scripts/tests/**" = ["S101", "PLR2004"]
 
 [tool.mypy]
