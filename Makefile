@@ -92,5 +92,7 @@ lint: ## Run ruff, mypy and frontend lint
 	$(UV) run --package governed-analytics-backend mypy backend/app
 	pnpm --filter frontend lint
 
-eval: ## Run the evaluation harness (Phase 10)
-	@echo "eval: not implemented until Phase 10"
+eval: ## Run the pipeline, permission and adversarial suites (EVAL_MODEL labels the run)
+	$(UV) run --package governed-analytics-backend python -m app.evals.runner --suite pipeline --model "$${EVAL_MODEL:-groq:openai/gpt-oss-20b}"
+	$(UV) run --package governed-analytics-backend python -m app.evals.runner --suite permission --model "$${EVAL_MODEL:-groq:openai/gpt-oss-20b}"
+	$(UV) run --package governed-analytics-backend python -m app.evals.runner --suite adversarial --model "$${EVAL_MODEL:-groq:openai/gpt-oss-20b}"
