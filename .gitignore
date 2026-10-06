@@ -53,3 +53,8 @@ Thumbs.db
 # Generated tool state
 warehouse/dbt_project/.user.yml
 frontend/*.tsbuildinfo
+
+# Evaluation run artifacts (checkpoints and response cache are local only)
+evals/cache/
+evals/results/*.checkpoint.jsonl
+backups/

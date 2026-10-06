@@ -65,7 +65,7 @@ jobs:
       - name: Run backend tests
         run: |
           uv sync --locked --all-packages
-          uv run --package governed-analytics-backend pytest backend/tests -q
+          uv run --package governed-analytics-backend pytest backend/tests -q --cov
 
   warehouse:
     name: Warehouse load and dbt build (committed sample)

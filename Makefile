@@ -12,7 +12,7 @@ WAREHOUSE_RUN := $(UV) run --package governed-analytics-warehouse
 # MetricFlow prints Unicode progress output, so the console must use UTF-8
 PYTHON_UTF8 := PYTHONIOENCODING=utf-8
 
-.PHONY: help up down logs ps data data-sample dbt seed test lint eval \
+.PHONY: help up down logs ps data data-sample dbt seed test lint eval backup restore \
 	semantic-validate golden index retrieval
 
 help: ## Show available targets
@@ -55,6 +55,12 @@ index: ## Rebuild the catalog embedding index in pgvector (app schema)
 
 retrieval: ## Measure top 3 retrieval recall on paraphrased metric and dimension mentions
 	$(UV) run --package governed-analytics-backend python -m app.semantic.evaluate_retrieval --database-url "$$APP_DATABASE_URL_HOST"
+
+backup: ## Dump the database to backups/ (custom format, with checksum)
+	bash infra/scripts/backup.sh
+
+restore: ## Restore a dump: make restore DUMP=backups/<file>.dump CONFIRM=yes
+	bash infra/scripts/restore.sh $(DUMP) $(if $(filter yes,$(CONFIRM)),--confirm,)
 
 migrate: ## Apply application database migrations (app schema)
 	cd backend && APP_DATABASE_URL="$$APP_DATABASE_URL_HOST" $(UV) run --package governed-analytics-backend alembic upgrade head

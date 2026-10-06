@@ -1,0 +1,101 @@
+/*
+  Design tokens. Values come from the project plan (section 8, Phase 8). Light is the default.
+  Dark values apply when the user prefers dark, or when data-theme="dark" is set on <html>.
+*/
+:root {
+  --color-primary: #0b1f3a;
+  --color-accent: #0a66ff;
+  --color-secondary: #00a3a3;
+
+  --color-bg: #ffffff;
+  --color-surface: #f5f7fa;
+  --color-surface-strong: #e8edf4;
+  --color-fg: #0b1f3a;
+  --color-fg-muted: #4b5563;
+  --color-border: #d6dde8;
+  --color-on-primary: #ffffff;
+  --color-on-accent: #ffffff;
+
+  --color-success: #15803d;
+  --color-warning: #b45309;
+  --color-danger: #b91c1c;
+
+  /* Color blind safe categorical palette (Okabe and Ito), used by charts */
+  --chart-1: #0072b2;
+  --chart-2: #e69f00;
+  --chart-3: #009e73;
+  --chart-4: #cc79a7;
+  --chart-5: #56b4e9;
+  --chart-6: #d55e00;
+  --chart-7: #f0e442;
+  --chart-8: #000000;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Type scale, ratio 1.25 */
+  --text-xs: 0.8rem;
+  --text-sm: 0.9rem;
+  --text-base: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5625rem;
+  --text-2xl: 1.953rem;
+  --text-3xl: 2.441rem;
+  --text-4xl: 3.052rem;
+
+  /* 8 point spacing grid */
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2rem;
+  --space-6: 3rem;
+  --space-8: 4rem;
+  --space-12: 6rem;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --shadow-1: 0 1px 2px rgb(11 31 58 / 0.08);
+  --shadow-2: 0 8px 24px rgb(11 31 58 / 0.12);
+  --focus-ring: 0 0 0 3px rgb(10 102 255 / 0.55);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-primary: #7fb2ff;
+    --color-accent: #5b9dff;
+    --color-secondary: #3fd1d1;
+    --color-bg: #0b1424;
+    --color-surface: #112038;
+    --color-surface-strong: #182b4a;
+    --color-fg: #e9eef7;
+    --color-fg-muted: #a7b4c8;
+    --color-border: #2a3d5c;
+    --color-on-primary: #0b1424;
+    --color-on-accent: #0b1424;
+    --color-success: #4ade80;
+    --color-warning: #fbbf24;
+    --color-danger: #f87171;
+    --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4);
+    --shadow-2: 0 8px 24px rgb(0 0 0 / 0.45);
+  }
+}
+
+:root[data-theme="dark"] {
+  --color-primary: #7fb2ff;
+  --color-accent: #5b9dff;
+  --color-secondary: #3fd1d1;
+  --color-bg: #0b1424;
+  --color-surface: #112038;
+  --color-surface-strong: #182b4a;
+  --color-fg: #e9eef7;
+  --color-fg-muted: #a7b4c8;
+  --color-border: #2a3d5c;
+  --color-on-primary: #0b1424;
+  --color-on-accent: #0b1424;
+  --color-success: #4ade80;
+  --color-warning: #fbbf24;
+  --color-danger: #f87171;
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-2: 0 8px 24px rgb(0 0 0 / 0.45);
+}

@@ -10,8 +10,8 @@ CONTENT_SECURITY_POLICY = (
     "img-src 'self' data: https://*.tile.openstreetmap.org; "
     "connect-src 'self'; "
     "script-src 'self'; "
-    "style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; "
-    "font-src 'self' https://fonts.gstatic.com; "
+    "style-src 'self' 'unsafe-inline'; "
+    "font-src 'self'; "
     "frame-ancestors 'none'"
 )
 

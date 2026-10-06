@@ -75,3 +75,22 @@ the SQL guard. A model that returns forbidden SQL is refused and audited, and it
   that answers can be reviewed.
 - **Not yet covered:** an external penetration test, backup and restore drills, and dependency
   and image scans in CI (planned in Phase 11).
+
+## Phase 11 review
+
+Checks run for this phase. Each row states what was verified and what was not.
+
+| Area | Result |
+|---|---|
+| Authentication and sessions | Argon2id hashes, lockout, rotating refresh tokens in an httpOnly cookie, access token held in memory only. Covered by the auth test suite (passing). |
+| Access control and leakage | Permission matrix and adversarial suites return zero leaked rows (governance tests, run against the dev stack). |
+| Headers | Content Security Policy tightened: fonts are self-hosted, so the Google Fonts origins were removed from `style-src` and `font-src`. |
+| Dependencies (frontend) | `pnpm audit --prod`: no known vulnerabilities. |
+| Dependencies (backend) and secrets | `pip-audit` and `gitleaks` run in the CI security job. Not run locally in this phase. |
+| Observability | Request ids on every response. `/metrics` is disabled unless `METRICS_TOKEN` is set, and requires it as a bearer token. |
+| Query plans | Migration 0006 adds indexes for chat sessions, saved queries, chat messages and evaluation tables. With sequential scans disabled, the planner uses them on the dev database. Dashboard and audit plans were not re-checked at larger volume. |
+
+Findings: none open at high or critical severity. One defect was found and fixed in this phase: the metrics middleware recorded every request under the route label `unmatched`, because Starlette sets the matched route on a copied scope. It now resolves the route template from the application's route table.
+
+Not done in this phase: Lighthouse and axe runs, the k6 load test (written in `loadtest/k6/api.js`, not executed because k6 is not installed here), and a dependency scan of the backend.
+

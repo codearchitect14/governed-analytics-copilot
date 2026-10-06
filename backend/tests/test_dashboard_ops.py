@@ -1,7 +1,7 @@
 """Phase 7: dashboards, operations analytics and demo history.
 
-The dashboard tests need the dev analytics marts (skipped otherwise). The seeder and operations tests
-use the test database only.
+The dashboard tests need the dev analytics marts (skipped otherwise).
+The seeder and operations tests use the test database only.
 """
 
 from __future__ import annotations
@@ -18,7 +18,13 @@ from app.db.engine import get_engine
 from app.ops import seed_history
 from app.pipeline.services import get_pipeline
 from tests.conftest import bearer, login, scalar
-from tests.test_pipeline_live import WAREHOUSE_URL, _mf_available, _run, _user, _user_with_scopes
+from tests.test_pipeline_live import (
+    WAREHOUSE_URL,
+    _mf_available,
+    _run,
+    _user,
+    _user_with_scopes,
+)
 
 PASSWORD = "DemoOnly-Meridian-2026"
 

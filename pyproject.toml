@@ -63,6 +63,9 @@ known-first-party = ["app"]
 "backend/app/dashboard/queries.py" = ["S608", "E501"]
 "backend/app/ops/**" = ["S608", "E501"]
 "backend/app/api/ops.py" = ["E501"]
+# Fixed column lists and filter clauses are built in code; every value is bound
+"backend/app/api/audit_explorer.py" = ["S608", "E501"]
+"backend/app/api/workspace.py" = ["E501"]
 "backend/app/dashboard/service.py" = ["E501"]
 "backend/app/api/dashboard.py" = ["E501"]
 

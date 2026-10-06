@@ -68,6 +68,9 @@ class Settings(BaseSettings):
     rate_limit_login: str = "10/minute"
     rate_limit_default: str = "120/minute"
 
+    # /metrics is served only when this token is configured and sent as a bearer token
+    metrics_token: SecretStr | None = None
+
     @field_validator("jwt_secret")
     @classmethod
     def _secret_is_long_enough(cls, value: SecretStr) -> SecretStr:
